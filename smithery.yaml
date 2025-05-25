@@ -1,0 +1,30 @@
+# Smithery configuration file: https://smithery.ai/docs/build/project-config
+
+startCommand:
+  type: stdio
+  commandFunction:
+    # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
+    |-
+    (config) => ({ command: 'node', args: ['build/cli.js'], env: { DATAFORSEO_USERNAME: config.username, DATAFORSEO_PASSWORD: config.password, ENABLED_MODULES: config.enabledModules } })
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - username
+      - password
+    properties:
+      username:
+        type: string
+        description: DataForSEO API username
+      password:
+        type: string
+        description: DataForSEO API password
+      enabledModules:
+        type: string
+        default: ""
+        description: Comma-separated list of enabled modules, e.g.,
+          'SERP,KEYWORDS_DATA'. Leave empty to enable all default modules.
+  exampleConfig:
+    username: demo_user
+    password: demo_pass
+    enabledModules: SERP,KEYWORDS_DATA,ONPAGE
