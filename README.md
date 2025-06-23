@@ -1,6 +1,6 @@
 # DataForSEO MCP Server
 
-Model Context Protocol (MCP) server implementation for DataForSEO, enabling Claude to interact with selected DataForSEO APIs and obtain SEO data through a standardized interface. 
+Model Context Protocol (MCP) server implementation for DataForSEO, enabling ChatGPT or other agents to interact with selected DataForSEO APIs and obtain SEO data through a standardized interface. The server now includes optional tools that satisfy OpenAI's remote MCP requirements for search and document retrieval.
 
 ## Features
 
@@ -35,7 +35,7 @@ export DATAFORSEO_PASSWORD=your_password
 
 # Optional: specify which modules to enable (comma-separated)
 # If not set, all modules will be enabled
-export ENABLED_MODULES="SERP,KEYWORDS_DATA,ONPAGE,DATAFORSEO_LABS,BACKLINKS,BUSINESS_DATA,DOMAIN_ANALYTICS"
+export ENABLED_MODULES="SERP,KEYWORDS_DATA,ONPAGE,DATAFORSEO_LABS,BACKLINKS,BUSINESS_DATA,DOMAIN_ANALYTICS,OPENAI"
 
 # Optional: enable full API responses
 # If not set or set to false, the server will filter and transform API responses to a more concise format
@@ -120,6 +120,7 @@ The following modules are available to be enabled/disabled:
 - `BACKLINKS`: data on inbound links, referring domains and referring pages for any domain, subdomain, or webpage;
 - `BUSINESS_DATA`: based on business reviews and business information publicly shared on the following platforms: Google, Trustpilot, Tripadvisor;
 - `DOMAIN_ANALYTICS`: helps identify all possible technologies used for building websites and offers Whois data;
+- `OPENAI`: provides `search` and `fetch` tools compatible with ChatGPT connectors;
 
 ## Adding New Tools/Modules
 
@@ -249,7 +250,8 @@ export const AVAILABLE_MODULES = [
   'KEYWORDS_DATA',
   'ONPAGE',
   'DATAFORSEO_LABS',
-  'YOUR_MODULE_NAME'  // Add your module name here
+  'YOUR_MODULE_NAME',
+  'OPENAI'  // Built-in module providing search and fetch for ChatGPT
 ] as const;
 ```
 
@@ -271,6 +273,21 @@ We're always looking to expand the capabilities of this MCP server. If you have 
    - Describe any specific features you'd like to see implemented.
 
 Your feedback helps us prioritize which APIs to support next!
+
+## Using with ChatGPT
+
+The `OPENAI` module provides a `search` tool and a `fetch` tool that follow OpenAI's [remote MCP server requirements](https://modelcontextprotocol.io/introduction). Enable the module by including `OPENAI` in the `ENABLED_MODULES` environment variable or leave the variable unset to enable all modules.
+
+The search tool accepts a `query` string and allows optional parameters to refine the request:
+
+- `source` – `serp` for live search engine results (default) or `labs` to use DataForSEO Labs keyword ideas
+- `search_engine` – one of `google`, `bing`, or `yahoo` (used when `source=serp`)
+- `language_code` – language code such as `en`
+- `location_name` – full location name (default `United States`)
+- `depth` – number of results to fetch from SERP (when `source=serp`)
+- `limit` – number of keyword ideas to return (when `source=labs`)
+
+It returns a list of results with `id`, `title`, `text`, and `url`. Use the `fetch` tool with a returned `id` to retrieve the full record for citation in ChatGPT.
 
 ## Resources
 

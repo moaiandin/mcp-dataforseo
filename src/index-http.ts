@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { BacklinksApiModule } from "./modules/backlinks/backlinks-api.module.js";
 import { BusinessDataApiModule } from "./modules/business-data-api/business-data-api.module.js";
 import { DomainAnalyticsApiModule } from "./modules/domain-analytics/domain-analytics-api.module.js";
+import { OpenAIToolsModule } from "./modules/openai/openai.module.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import express, { Request as ExpressRequest, Response, NextFunction } from "express";
 import { randomUUID } from "node:crypto";
@@ -87,6 +88,9 @@ function getServer(username: string | undefined, password: string | undefined) :
   }
   if (isModuleEnabled('DOMAIN_ANALYTICS', enabledModules)) {
     modules.push(new DomainAnalyticsApiModule(dataForSEOClient));
+  }
+  if (isModuleEnabled('OPENAI', enabledModules)) {
+    modules.push(new OpenAIToolsModule(dataForSEOClient));
   }
   console.error('Modules initialized');
   function registerModuleTools() {
